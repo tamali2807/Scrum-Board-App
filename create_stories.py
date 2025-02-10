@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from sqlalchemy.exc import SQLAlchemyError
-#import time
+import time
 #from st_aggrid import AgGrid, GridOptionsBuilder
 
 def get_connection():
