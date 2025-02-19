@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from sqlalchemy.exc import SQLAlchemyError
 import time
-#from st_aggrid import AgGrid, GridOptionsBuilder
+from st_aggrid import AgGrid, GridOptionsBuilder
 
 def get_connection():
     """Establish connection to MySQL Database."""
@@ -120,51 +120,42 @@ def create_stories():
         ticket_df = pd.DataFrame(stories)
 
         
-        # # Format date columns
-        # if 'start_date' in ticket_df.columns:
-        #     ticket_df['start_date'] = pd.to_datetime(ticket_df['start_date']).dt.strftime('%Y-%m-%d')
-        # if 'end_date' in ticket_df.columns:
-        #     ticket_df['end_date'] = pd.to_datetime(ticket_df['end_date']).dt.strftime('%Y-%m-%d')
+        # Format date columns
+        if 'start_date' in ticket_df.columns:
+            ticket_df['start_date'] = pd.to_datetime(ticket_df['start_date']).dt.strftime('%Y-%m-%d')
+        if 'end_date' in ticket_df.columns:
+            ticket_df['end_date'] = pd.to_datetime(ticket_df['end_date']).dt.strftime('%Y-%m-%d')
 
-        # # Configure AgGrid with filtering enabled for all columns
-        # gb = GridOptionsBuilder.from_dataframe(ticket_df)
+        # Configure AgGrid with filtering enabled for all columns
+        gb = GridOptionsBuilder.from_dataframe(ticket_df)
 
-        # for col in ticket_df.columns:
-        #     if ticket_df[col].dtype == "object":  # Text columns
-        #         gb.configure_column(col, filter="agTextColumnFilter")
-        #     else:  # Numeric or Date columns
-        #         gb.configure_column(col, filter="agNumberColumnFilter")
+        for col in ticket_df.columns:
+            if ticket_df[col].dtype == "object":  # Text columns
+                gb.configure_column(col, filter="agTextColumnFilter")
+            else:  # Numeric or Date columns
+                gb.configure_column(col, filter="agNumberColumnFilter")
 
-        # # Configure AgGrid with consistent filter icon positioning and specific column widths
-        # gb = GridOptionsBuilder.from_dataframe(ticket_df)
-        # column_widths = {
-        #     "id": 80,
-        #     "title": 300,
-        #     "assignee": 200,
-        #     "time_allotted": 150,
-        #     "start_date": 120,
-        #     "end_date": 120,
-        #     "status": 150
-        # }
-        # for col in ticket_df.columns:
-        #     gb.configure_column(col, filter=True, headerClass='align-filter-right', width=column_widths.get(col, 150))
+        # Configure AgGrid with consistent filter icon positioning and specific column widths
+        gb = GridOptionsBuilder.from_dataframe(ticket_df)
+        for col in ticket_df.columns:
+            gb.configure_column(col, filter=True, headerClass='align-filter-right')
 
-        # grid_options = gb.build()
+        grid_options = gb.build()
 
-        # # Apply custom CSS to align filter icons consistently
-        # st.markdown(
-        #     """
-        #     <style>
-        #         .align-filter-right .ag-header-cell-filter { justify-content: right !important; }
-        #         .align-filter-right .ag-header-cell-label { justify-content: right !important; }
-        #     </style>
-        #     """, unsafe_allow_html=True
-        # )
+        # Apply custom CSS to align filter icons consistently
+        st.markdown(
+            """
+            <style>
+                .align-filter-right .ag-header-cell-filter { justify-content: right !important; }
+                .align-filter-right .ag-header-cell-label { justify-content: right !important; }
+            </style>
+            """, unsafe_allow_html=True
+        )
 
-        # # Display dataframe with AgGrid
-        # AgGrid(ticket_df, gridOptions=grid_options, fit_columns_on_grid_load=True)
+        # Display dataframe with AgGrid
+        AgGrid(ticket_df,gridOptions=grid_options, fit_columns_on_grid_load=False)
 
-        st.dataframe(ticket_df,hide_index=True)
+        #st.dataframe(ticket_df,hide_index=True)
 
 
         # Option to delete or update a story
